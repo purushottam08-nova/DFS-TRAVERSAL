@@ -3,114 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DFS Traversal Animation</title>
+  <title>DFS Traversal Animation (Multiple Graphs)</title>
   <style>
     :root {
-      --bg: #0f172a;        /* slate-900 */
-      --panel: #111827;     /* gray-900 */
-      --muted: #334155;     /* slate-600 */
-      --text: #e5e7eb;      /* gray-200 */
-      --accent: #60a5fa;    /* blue-400 */
-      --accent-2: #34d399;  /* emerald-400 */
-      --warn: #fbbf24;      /* amber-400 */
-      --edge: #64748b;      /* slate-500 */
-      --visited: #22d3ee;   /* cyan-400 */
-      --active: #f472b6;    /* pink-400 */
+      --bg: #0f172a;
+      --panel: #111827;
+      --muted: #334155;
+      --text: #e5e7eb;
+      --accent: #60a5fa;
+      --accent-2: #34d399;
+      --edge: #64748b;
+      --visited: #22d3ee;
+      --active: #f472b6;
     }
-
     * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+      margin: 0;
+      font-family: system-ui, sans-serif;
       background: radial-gradient(1200px 800px at 70% -10%, #1e293b 0%, var(--bg) 60%);
       color: var(--text);
-      min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
     }
-
-    header {
-      padding: 14px 18px; border-bottom: 1px solid #1f2937; background: rgba(17,24,39,.7); backdrop-filter: blur(6px);
-      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-    }
-    header h1 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: .3px; }
-    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .btn {
-      background: #0ea5e9; color: #001018; border: 0; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 700;
-      transition: transform .1s ease, box-shadow .2s ease; box-shadow: 0 8px 20px rgba(14,165,233,.25);
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn.secondary { background: #334155; color: #d1d5db; box-shadow: none; }
+    header { padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #1f2937; }
+    h1 { font-size: 18px; margin: 0; }
+    .btn { background: #0ea5e9; color: #001018; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: 700; }
     .btn.stop { background: #ef4444; color: #fff; }
-
-    .panel { display: grid; grid-template-columns: 320px 1fr; gap: 16px; padding: 16px; }
-    @media (max-width: 900px) { .panel { grid-template-columns: 1fr; } }
-
-    .sidebar {
-      background: linear-gradient(180deg, rgba(17,24,39,.85), rgba(17,24,39,.6));
-      border: 1px solid #1f2937; border-radius: 16px; padding: 14px; display: grid; gap: 14px;
-    }
-    .card { background: rgba(2,6,23,.5); border: 1px solid #1f2937; border-radius: 14px; padding: 12px; }
-    .card h3 { margin: 0 0 8px; font-size: 14px; color: #cbd5e1; letter-spacing: .3px; }
-    .log { height: 180px; overflow: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.5; }
-    .pill { background: #0b1220; border: 1px dashed #1f2937; border-radius: 999px; padding: 8px 10px; display: inline-flex; gap: 8px; align-items: center; }
-
-    .graph-wrap {
-      background: radial-gradient(800px 500px at 40% 20%, rgba(30,41,59,.7), rgba(2,6,23,.4));
-      border: 1px solid #1f2937; border-radius: 16px; position: relative; overflow: hidden;
-    }
-    svg { width: 100%; height: 100%; min-height: 520px; display: block; }
-
-    /* Edges */
-    .edge { stroke: var(--edge); stroke-width: 2; opacity: .6; transition: opacity .3s ease, stroke .3s ease; }
-    .edge.visited { stroke: var(--visited); opacity: .95; stroke-width: 3; filter: drop-shadow(0 0 6px rgba(34,211,238,.6)); }
-
-    /* Nodes */
-    .node circle {
-      fill: #0b1220; stroke: #334155; stroke-width: 2; transition: transform .2s ease, filter .2s ease, stroke .2s ease, fill .2s ease;
-    }
-    .node text { fill: #cbd5e1; font-weight: 700; pointer-events: none; }
-    .node:hover circle { stroke: var(--accent); }
-
-    .node.visited circle { stroke: var(--visited); fill: rgba(8,145,178,.15); filter: drop-shadow(0 0 10px rgba(34,211,238,.4)); }
-    .node.active circle  { stroke: var(--active); fill: rgba(236,72,153,.12); filter: drop-shadow(0 0 12px rgba(244,114,182,.5)); }
-    .node.start circle   { stroke: var(--accent-2); fill: rgba(16,185,129,.12); }
-
-    .stack { display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; }
-    .chip {
-      padding: 6px 10px; border-radius: 999px; background: #0b1220; border: 1px solid #1f2937; color: #cbd5e1; font-size: 12px; font-weight: 700;
-    }
+    .btn.secondary { background: #334155; color: #d1d5db; }
+    .panel { display: grid; grid-template-columns: 300px 1fr; gap: 12px; padding: 12px; }
+    .sidebar { background: rgba(17,24,39,.7); border: 1px solid #1f2937; border-radius: 12px; padding: 10px; display: grid; gap: 12px; }
+    .card { background: rgba(2,6,23,.5); border: 1px solid #1f2937; border-radius: 10px; padding: 8px; }
+    .stack { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { padding: 4px 8px; border-radius: 999px; background: #0b1220; border: 1px solid #1f2937; font-size: 12px; font-weight: 700; }
     .chip.active { border-color: var(--active); color: #fce7f3; }
-
-    .footer { padding: 10px 16px; color: #94a3b8; border-top: 1px solid #1f2937; font-size: 12px; }
-
-    .row { display: flex; align-items: center; gap: 12px; }
-    select, input[type="range"] {
-      appearance: none; background: #0b1220; border: 1px solid #1f2937; color: #e5e7eb; padding: 8px 10px; border-radius: 10px;
-    }
-    label { font-size: 12px; color: #9ca3af; }
+    svg { width: 100%; height: 500px; background: #0b1220; border-radius: 12px; }
+    .edge { stroke: var(--edge); stroke-width: 2; opacity: .6; }
+    .edge.visited { stroke: var(--visited); stroke-width: 3; opacity: 1; }
+    .node circle { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+    .node.visited circle { stroke: var(--visited); fill: #e0f7fa; }
+    .node.active circle { stroke: var(--active); fill: #fce7f3; }
+    .node.start circle { stroke: var(--accent-2); fill: #d1fae5; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Depth‑First Search (DFS) • Live Animation</h1>
-    <div class="controls">
-      <button id="startBtn" class="btn">▶ Start DFS</button>
-      <button id="stopBtn" class="btn stop" title="Stop animation">■ Stop</button>
-      <button id="resetBtn" class="btn secondary">↺ Reset</button>
-      <div class="row">
-        <label for="speed">Speed</label>
-        <input id="speed" type="range" min="50" max="1200" step="50" value="400" />
-      </div>
-      <div class="row">
-        <label for="startNode">Start Node</label>
-        <select id="startNode"></select>
-      </div>
-    </div>
+    <h1>DFS Traversal Animation</h1>
+    <button id="startBtn" class="btn">▶ Start DFS</button>
+    <button id="stopBtn" class="btn stop">■ Stop</button>
+    <button id="resetBtn" class="btn secondary">↺ Reset</button>
+    <label>Speed <input id="speed" type="range" min="50" max="1200" step="50" value="400"></label>
+    <label>Start Node <select id="startNode"></select></label>
+    <label>Graph <select id="graphSelect"></select></label>
   </header>
 
   <main class="panel">
     <aside class="sidebar">
       <div class="card">
-        <h3>Current Call Stack</h3>
-        <div id="stack" class="stack" aria-live="polite"></div>
+        <h3>Call Stack</h3>
+        <div id="stack" class="stack"></div>
       </div>
       <div class="card">
         <h3>Traversal Order</h3>
@@ -118,245 +69,139 @@
       </div>
       <div class="card">
         <h3>Event Log</h3>
-        <div id="log" class="log"></div>
-      </div>
-      <div class="card">
-        <h3>Tips</h3>
-        <div class="pill">Click any node to set it as the start.</div>
+        <div id="log" style="font-size:12px;max-height:160px;overflow:auto;"></div>
       </div>
     </aside>
-
-    <section class="graph-wrap">
-      <svg id="graph" viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg" aria-label="Graph canvas">
-        <!-- Edges (defined first so they render under nodes) -->
-        <!-- We'll programmatically mark them as visited -->
-
-        <!-- Nodes -->
-        <!-- Positions chosen for readability -->
-      </svg>
+    <section>
+      <svg id="graph" viewBox="0 0 800 500"></svg>
     </section>
   </main>
 
-  <div class="footer">Made for learning: visualizes classic recursive DFS with a stack view and animated edges/nodes.</div>
-
   <script>
-    // ---------- Graph Definition ----------
-    // Simple undirected graph with labeled nodes and hand-placed coordinates
-    const nodes = [
-      { id: 'A', x: 120, y: 90 },
-      { id: 'B', x: 260, y: 60 },
-      { id: 'C', x: 420, y: 80 },
-      { id: 'D', x: 580, y: 100 },
-      { id: 'E', x: 220, y: 220 },
-      { id: 'F', x: 420, y: 240 },
-      { id: 'G', x: 620, y: 220 },
-      { id: 'H', x: 320, y: 360 },
-      { id: 'I', x: 520, y: 360 },
-    ];
+    // Multiple graph definitions
+    const graphs = {
+      Graph1: {
+        nodes: [
+          {id:'A',x:120,y:90},{id:'B',x:260,y:60},{id:'C',x:420,y:80},
+          {id:'D',x:580,y:100},{id:'E',x:220,y:220},{id:'F',x:420,y:240}
+        ],
+        edges: [['A','B'],['B','C'],['C','D'],['A','E'],['E','F'],['C','F']]
+      },
+      Graph2: {
+        nodes: [
+          {id:'1',x:150,y:100},{id:'2',x:300,y:80},{id:'3',x:450,y:120},
+          {id:'4',x:600,y:100},{id:'5',x:225,y:250},{id:'6',x:375,y:260},{id:'7',x:525,y:240}
+        ],
+        edges: [['1','2'],['2','3'],['3','4'],['2','5'],['3','6'],['3','7']]
+      },
+      Graph3: {
+        nodes: [
+          {id:'P',x:200,y:120},{id:'Q',x:350,y:60},{id:'R',x:500,y:120},
+          {id:'S',x:275,y:240},{id:'T',x:425,y:240}
+        ],
+        edges: [['P','Q'],['Q','R'],['P','S'],['Q','T'],['R','T']]
+      },
+      Graph4: { // Star graph
+        nodes: [
+          {id:'X',x:400,y:200},{id:'Y',x:250,y:100},{id:'Z',x:550,y:100},
+          {id:'M',x:250,y:300},{id:'N',x:550,y:300}
+        ],
+        edges: [['X','Y'],['X','Z'],['X','M'],['X','N']]
+      },
+      Graph5: { // Cycle graph
+        nodes: [
+          {id:'1',x:200,y:150},{id:'2',x:400,y:80},{id:'3',x:600,y:150},
+          {id:'4',x:500,y:300},{id:'5',x:300,y:300}
+        ],
+        edges: [['1','2'],['2','3'],['3','4'],['4','5'],['5','1']]
+      }
+    };
 
-    // Edge list (undirected)
-    const edges = [
-      ['A','B'],['B','C'],['C','D'],
-      ['A','E'],['B','E'],['C','F'],['D','G'],
-      ['E','F'],['F','G'],
-      ['E','H'],['F','H'],['F','I'],['G','I']
-    ];
-
-    // Build adjacency list sorted alphabetically for deterministic DFS order
-    const adj = Object.fromEntries(nodes.map(n => [n.id, []]));
-    for (const [u,v] of edges) { adj[u].push(v); adj[v].push(u); }
-    for (const k in adj) adj[k].sort();
-
-    // ---------- DOM helpers ----------
     const svg = document.getElementById('graph');
+    const graphSelect = document.getElementById('graphSelect');
+    const startSelect = document.getElementById('startNode');
     const stackEl = document.getElementById('stack');
     const orderEl = document.getElementById('order');
     const logEl = document.getElementById('log');
-    const startSelect = document.getElementById('startNode');
-    const speedInput = document.getElementById('speed');
-    const startBtn = document.getElementById('startBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const stopBtn = document.getElementById('stopBtn');
 
-    // Edge id helper in sorted form so (u,v) === (v,u)
-    const edgeId = (u,v) => ['e', ...[u,v].sort()].join('-');
+    let currentGraph = 'Graph1';
+    let adj = {};
+    let visited, order, running, cancelled, startNode;
 
-    // Render edges
-    for (const [u,v] of edges) {
-      const U = nodes.find(n => n.id === u);
-      const V = nodes.find(n => n.id === v);
-      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1', U.x); line.setAttribute('y1', U.y);
-      line.setAttribute('x2', V.x); line.setAttribute('y2', V.y);
-      line.classList.add('edge');
-      line.id = edgeId(u,v);
-      svg.appendChild(line);
-    }
-
-    // Render nodes
-    for (const n of nodes) {
-      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-      g.classList.add('node');
-      g.setAttribute('data-id', n.id);
-      g.setAttribute('tabindex', '0');
-      g.setAttribute('role', 'button');
-      g.setAttribute('aria-label', `Node ${n.id}`);
-
-      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      c.setAttribute('cx', n.x); c.setAttribute('cy', n.y); c.setAttribute('r', 22);
-
-      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x', n.x); t.setAttribute('y', n.y + 4);
-      t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', '14');
-      t.textContent = n.id;
-
-      g.appendChild(c); g.appendChild(t);
-      svg.appendChild(g);
-
-      // Click to set start node
-      g.addEventListener('click', () => {
-        if (running) return; // avoid changing mid-run
-        startNode = n.id; setStartHighlight();
-      });
-      // Keyboard accessibility
-      g.addEventListener('keydown', (e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && !running) {
-          startNode = n.id; setStartHighlight();
-          e.preventDefault();
-        }
-      });
-    }
-
-    // Populate start node select
-    nodes.forEach(n => {
+    Object.keys(graphs).forEach(g => {
       const opt = document.createElement('option');
-      opt.value = n.id; opt.textContent = n.id;
-      startSelect.appendChild(opt);
+      opt.value = g; opt.textContent = g;
+      graphSelect.appendChild(opt);
     });
+    graphSelect.value = currentGraph;
 
-    // ---------- Animation State ----------
-    let running = false;
-    let cancelled = false;
-    let visited = new Set();
-    let order = [];
-    let startNode = nodes[0].id;
+    function edgeId(u,v){ return ['e',... [u,v].sort()].join('-'); }
 
-    startSelect.value = startNode;
+    function drawGraph() {
+      svg.innerHTML='';
+      const {nodes,edges} = graphs[currentGraph];
+      adj = Object.fromEntries(nodes.map(n=>[n.id,[]]));
+      for(const [u,v] of edges){ adj[u].push(v); adj[v].push(u);} for(const k in adj) adj[k].sort();
 
-    function setStartHighlight() {
-      document.querySelectorAll('.node').forEach(el => el.classList.remove('start'));
-      const el = [...document.querySelectorAll('.node')].find(n => n.getAttribute('data-id') === startNode);
-      if (el) el.classList.add('start');
-      startSelect.value = startNode;
-    }
-
-    setStartHighlight();
-
-    function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
-
-    function pushLog(msg) {
-      const time = new Date().toLocaleTimeString();
-      logEl.innerHTML += `<div>[${time}] ${msg}</div>`;
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    function renderStack(stack) {
-      stackEl.innerHTML = '';
-      stack.forEach((id, i) => {
-        const chip = document.createElement('div');
-        chip.className = 'chip' + (i === stack.length-1 ? ' active' : '');
-        chip.textContent = id;
-        stackEl.appendChild(chip);
-      });
-    }
-
-    function renderOrder() {
-      orderEl.innerHTML = '';
-      order.forEach(id => {
-        const chip = document.createElement('div');
-        chip.className = 'chip';
-        chip.textContent = id;
-        orderEl.appendChild(chip);
-      });
-    }
-
-    function resetStyles() {
-      document.querySelectorAll('.node').forEach(el => el.classList.remove('visited','active'));
-      document.querySelectorAll('.edge').forEach(el => el.classList.remove('visited'));
-    }
-
-    function resetAll() {
-      running = false; cancelled = false; visited = new Set(); order = [];
-      resetStyles();
-      stackEl.innerHTML = ''; orderEl.innerHTML = ''; logEl.innerHTML = '';
-      setStartHighlight();
-    }
-
-    resetBtn.addEventListener('click', resetAll);
-
-    stopBtn.addEventListener('click', () => { cancelled = true; running = false; pushLog('Stopped.'); });
-
-    startSelect.addEventListener('change', (e) => { if (!running) { startNode = e.target.value; setStartHighlight(); } });
-
-    startBtn.addEventListener('click', async () => {
-      if (running) return;
-      resetAll();
-      running = true; cancelled = false;
-      const delay = () => Number(speedInput.value);
-      pushLog(`Starting DFS from ${startNode}`);
-
-      const stack = [];
-
-      async function dfs(u, parent=null) {
-        if (cancelled) return;
-        stack.push(u); renderStack(stack);
-        setActive(u, true);
-        await sleep(delay());
-
-        if (!visited.has(u)) {
-          visited.add(u);
-          order.push(u); renderOrder();
-          setVisited(u);
-          pushLog(`Visit ${u}`);
-          await sleep(delay());
-
-          for (const v of adj[u]) {
-            if (cancelled) return;
-            // Animate edge exploration
-            highlightEdge(u, v);
-            await sleep(Math.max(120, delay() * 0.8));
-            if (!visited.has(v)) {
-              await dfs(v, u);
-              if (cancelled) return;
-              await sleep(Math.max(120, delay() * 0.6));
-            }
-          }
-        }
-
-        setActive(u, false);
-        stack.pop(); renderStack(stack);
+      for(const [u,v] of edges){
+        const U=nodes.find(n=>n.id===u),V=nodes.find(n=>n.id===v);
+        const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1',U.x);line.setAttribute('y1',U.y);
+        line.setAttribute('x2',V.x);line.setAttribute('y2',V.y);
+        line.classList.add('edge'); line.id=edgeId(u,v);
+        svg.appendChild(line);
       }
 
-      await dfs(startNode);
-      running = false;
-      if (!cancelled) pushLog('DFS complete.');
-    });
+      startSelect.innerHTML='';
+      for(const n of nodes){
+        const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+        g.classList.add('node'); g.setAttribute('data-id',n.id);
+        const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r',20);
+        const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x',n.x);t.setAttribute('y',n.y+4);
+        t.setAttribute('text-anchor','middle');t.textContent=n.id;
+        g.appendChild(c);g.appendChild(t);svg.appendChild(g);
+        const opt=document.createElement('option');opt.value=n.id;opt.textContent=n.id;startSelect.appendChild(opt);
+        g.addEventListener('click',()=>{if(!running){startNode=n.id;setStartHighlight();}});
+      }
+      startNode=nodes[0].id; startSelect.value=startNode; setStartHighlight();
+    }
 
-    function setVisited(id) {
-      const el = nodeEl(id); if (!el) return;
-      el.classList.add('visited');
-    }
-    function setActive(id, on) {
-      const el = nodeEl(id); if (!el) return;
-      el.classList.toggle('active', !!on);
-    }
-    function nodeEl(id) {
-      return [...document.querySelectorAll('.node')].find(n => n.getAttribute('data-id') === id);
-    }
-    function highlightEdge(u,v) {
-      const e = document.getElementById(edgeId(u,v));
-      if (e) e.classList.add('visited');
-    }
+    function setStartHighlight(){ document.querySelectorAll('.node').forEach(el=>el.classList.remove('start'));
+      const el=[...document.querySelectorAll('.node')].find(n=>n.getAttribute('data-id')===startNode);
+      if(el) el.classList.add('start'); }
+
+    function resetAll(){ running=false;cancelled=false;visited=new Set();order=[];
+      document.querySelectorAll('.node').forEach(el=>el.classList.remove('visited','active'));
+      document.querySelectorAll('.edge').forEach(el=>el.classList.remove('visited'));
+      stackEl.innerHTML=''; orderEl.innerHTML=''; logEl.innerHTML=''; setStartHighlight(); }
+
+    function sleep(ms){ return new Promise(res=>setTimeout(res,ms)); }
+    function pushLog(msg){ logEl.innerHTML+=`<div>${msg}</div>`; logEl.scrollTop=logEl.scrollHeight; }
+    function renderStack(stack){ stackEl.innerHTML=''; stack.forEach((id,i)=>{const chip=document.createElement('div');chip.className='chip'+(i===stack.length-1?' active':'');chip.textContent=id;stackEl.appendChild(chip);}); }
+    function renderOrder(){ orderEl.innerHTML=''; order.forEach(id=>{const chip=document.createElement('div');chip.className='chip';chip.textContent=id;orderEl.appendChild(chip);}); }
+
+    function highlightNode(id,cls,on=true){ const el=[...document.querySelectorAll('.node')].find(n=>n.getAttribute('data-id')===id); if(el) el.classList.toggle(cls,on); }
+    function highlightEdge(u,v){ const e=document.getElementById(edgeId(u,v)); if(e) e.classList.add('visited'); }
+
+    document.getElementById('resetBtn').onclick=resetAll;
+    document.getElementById('stopBtn').onclick=()=>{cancelled=true;running=false;pushLog('Stopped.')};
+    graphSelect.onchange=(e)=>{currentGraph=e.target.value;drawGraph();resetAll();};
+    startSelect.onchange=(e)=>{if(!running){startNode=e.target.value;setStartHighlight();}};
+
+    document.getElementById('startBtn').onclick=async()=>{
+      if(running) return; resetAll(); running=true;cancelled=false; pushLog(`Starting DFS from ${startNode}`);
+      const delay=()=>Number(document.getElementById('speed').value);
+      const stack=[];
+      async function dfs(u){ if(cancelled) return; stack.push(u); renderStack(stack); highlightNode(u,'active',true); await sleep(delay());
+        if(!visited.has(u)){ visited.add(u); order.push(u); renderOrder(); highlightNode(u,'visited'); pushLog(`Visit ${u}`); await sleep(delay());
+          for(const v of adj[u]){ if(cancelled) return; highlightEdge(u,v); await sleep(Math.max(100,delay()*0.8)); if(!visited.has(v)){ await dfs(v); if(cancelled) return; }} }
+        highlightNode(u,'active',false); stack.pop(); renderStack(stack); }
+      await dfs(startNode); running=false; if(!cancelled) pushLog('DFS complete.');
+    };
+
+    drawGraph(); resetAll();
   </script>
 </body>
 </html>
